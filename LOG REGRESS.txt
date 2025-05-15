@@ -1,0 +1,818 @@
+#PLEASE USE DATA FROM : https://github.com/nikkittmess/credit-risk-score.git
+
+
+
+
+
+
+
+# Importing Libraries
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import LabelEncoder
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import confusion_matrix
+
+
+
+
+# Importing  Dataset
+
+train = pd.read_csv("train.csv")
+
+test = pd.read_csv("test.csv")
+
+validate = pd.read_csv("validate.csv")
+
+
+
+# getting training and test set(excluding dependent variables in train set and excluding independent variables in test set)
+
+x_train = train.iloc[ : , :-1]
+
+y_train = train.iloc[ : , 12]
+
+x_test = test.iloc[ :, :]
+
+y_test = validate.iloc[ : , 12]
+
+#Plotting bar chart to view outcomes of all customers in the dataset
+
+concatenated=pd.concat([validate,train])
+outcomes=concatenated["outcome"].value_counts()
+
+plt.bar( ("YES","NO"),outcomes , color="black" )
+plt.title("WHETHER LOAN APPROVED BY BANK")
+plt.xlabel("OUTCOMES")
+plt.ylabel("NUMBER OF CUSTOMERS ")
+Plt.show()
+
+#Encoding target variables
+
+# Encoding Training set
+
+labelencoder_tr = LabelEncoder()
+
+y_train = labelencoder_tr.fit_transform(y_train)
+
+
+
+
+# Encoding Test set
+
+labelencoder_ts = LabelEncoder()
+
+y_test = labelencoder_ts.fit_transform(y_test)
+
+
+
+
+
+# Pre Processing
+
+# Our data is ready to be preprocessed
+   # Check for missing values
+   # Check for outliers
+   # Calcluate total missing values
+
+    
+# both the trasining set and test sets are pre processed 
+
+
+# Checking for Missing Values in Training Set
+
+x_train.apply(lambda x: sum(x.isnull()), axis = 0)
+
+# Checking for Missing Values in Test Set
+
+x_test.apply(lambda x: sum(x.isnull()), axis = 0)
+
+
+
+
+
+
+# No Preprocessing Required for Loan Id since its a unique value for each user 
+
+
+
+
+
+# PRE PROCESSING OF GENDER VARIABLE 
+
+
+# Training Set Preprocessing 
+
+x_train["Gender"].describe()
+
+# Checking for Null values in Gender Variable 
+
+x_train.Gender.isnull().sum()
+
+# Checking counts of levels
+
+x_train.Gender.value_counts()
+
+
+
+
+#  Test Set Preprocessing 
+
+x_test["Gender"].describe()
+
+# Checking for Null values 
+
+x_test.Gender.isnull().sum()
+
+# Checking counts of levels,i.e Male and Female 
+
+x_test.Gender.value_counts()
+
+
+# Impute missing values with Males since they are more in counts
+
+x_train["Gender"].fillna("Male", inplace = True)
+
+x_test["Gender"].fillna("Male", inplace = True)
+
+
+
+
+
+
+
+
+# PRE PROCESSING OF MARRIED VARIABLE
+
+
+#  Training Set pre processing 
+
+x_train["Married"].describe()
+
+# Checking for NULL values 
+
+x_train.Married.isnull().sum()
+
+# Checking counts of levels,i.e yes or no
+
+x_train.Married.value_counts()
+
+
+
+# Test Set pre processing
+
+x_test["Married"].describe()
+
+# Check Na's
+
+x_test.Married.isnull().sum()
+
+# Married variable in test set has no missing values
+# Hence no imputation
+
+
+# Checking counts of levels
+
+x_test.Married.value_counts()
+
+
+# Impute missing values with Yes since they are more in counts
+
+x_train["Married"].fillna("Yes", inplace = True)
+
+
+
+
+
+
+
+
+
+# DEPENDENTS VARIABLE PRE PROCESSING 
+
+#  Training Set pre processing 
+
+x_train["Dependents"].describe()
+
+# Check for NULL values
+
+x_train.Dependents.isnull().sum()
+
+# Checking counts of levels,i.e number of dependents 
+
+x_train.Dependents.value_counts()
+
+
+
+# Test Set pre processing 
+
+x_test["Dependents"].describe()
+
+# Check Na's
+
+x_test.Dependents.isnull().sum()
+
+# Checking counts of levels
+
+x_test.Dependents.value_counts()
+
+
+# Impute missing values with "0" since they are more in counts for both the sets 
+
+x_train["Dependents"].fillna("0", inplace = True)
+
+x_test["Dependents"].fillna("0", inplace = True)
+
+
+
+
+
+
+
+
+# EDUCATION VARIABLE PRE PROCESSINGH
+
+
+# training set pre processing
+
+x_train["Education"].describe()
+
+# Check for NULL values 
+
+x_train.Education.isnull().sum()
+
+# Checking counts of levels,i.e the education level
+
+x_train.Education.value_counts()
+
+
+
+# Test Set pre processing
+
+x_test["Education"].describe()
+
+# Check Na's
+
+x_test.Education.isnull().sum()
+
+# Checking counts of levels
+
+x_test.Education.value_counts()
+
+
+# No missing values 
+# Hence no imputation required
+
+
+
+
+
+
+
+
+# SELF EMPLOYED VARIABLE PRE RPOCESSING 
+
+
+
+# Training Set pre processing 
+
+x_train["Self_Employed"].describe()
+
+# Check Na's
+
+x_train.Self_Employed.isnull().sum()
+
+# Checking counts of levels
+
+x_train.Self_Employed.value_counts()
+
+
+
+# Test Set pre proscessing 
+
+x_test["Self_Employed"].describe()
+
+# Check Na's
+
+x_test.Self_Employed.isnull().sum()
+
+# Checking counts of levels
+
+x_test.Self_Employed.value_counts()
+
+
+# Impute missing values with No  since they are more in counts
+
+x_train["Self_Employed"].fillna("No", inplace = True)
+
+x_test["Self_Employed"].fillna("No", inplace = True)
+
+
+
+
+
+
+
+# APPLICANT INCOME VARIABLE PRE PROCESSING 
+
+
+# Training Set pre processing 
+
+x_train["ApplicantIncome"].describe()
+
+# Check for NULL values 
+
+x_train.ApplicantIncome.isnull().sum()
+
+
+# Check for Outliers using boxplot
+
+x_train.boxplot("ApplicantIncome")
+
+
+q75, q25 = np.percentile(x_train.ApplicantIncome, [75, 25])
+iqr = q75 - q25
+a = q75 + (1.5 * iqr)
+
+# Anything above a will be an outlier
+
+# We will replace outliers by mean because more the mean, higher will be the probability of getting loan
+ 
+
+x_train.ApplicantIncome.loc[x_train["ApplicantIncome"] >=a ] = np.mean(x_train["ApplicantIncome"])
+
+x_train.boxplot("ApplicantIncome")
+
+
+
+# Test Set pre processing
+
+x_test["ApplicantIncome"].describe()
+
+# Check for NULL values
+
+x_test.ApplicantIncome.isnull().sum()
+
+# Check for Outliers
+
+x_test.boxplot("ApplicantIncome")
+
+
+q75, q25 = np.percentile(x_test.ApplicantIncome, [75, 25])
+iqr = q75 - q25
+a = q75 + (1.5 * iqr)
+
+# Anything above a will be outliers
+
+# We will replace outliers by mean because more the mean, higher will be the probability of getting loan
+
+
+x_test.ApplicantIncome.loc[x_test["ApplicantIncome"] >=a ] = np.mean(x_test["ApplicantIncome"])
+
+x_test.boxplot("ApplicantIncome")
+
+
+
+
+
+
+
+# COAPPLICANT INCOME VARIABLE PRE PROCESSING 
+
+
+# Training Set pre processing 
+
+x_train["CoapplicantIncome"].describe()
+
+# Check for NULL values
+
+x_train.CoapplicantIncome.isnull().sum()
+
+
+# Check for Outliers
+
+x_train.boxplot("CoapplicantIncome")
+
+
+q75, q25 = np.percentile(x_train.CoapplicantIncome, [75, 25])
+iqr = q75 - q25
+a = q75 + (1.5 * iqr)
+
+# Anything above a will be outliers
+
+# We will replace outliers by mean because more the mean, higher will be the probability of getting loan
+
+
+x_train.CoapplicantIncome.loc[x_train["CoapplicantIncome"] >=a ] = np.mean(x_train["CoapplicantIncome"])
+
+x_train.boxplot("CoapplicantIncome")
+
+
+
+
+
+# Test Set pre processing
+
+x_test["CoapplicantIncome"].describe()
+
+# Check for NULL values
+
+x_test.CoapplicantIncome.isnull().sum()
+
+# Check for Outliers
+
+x_test.boxplot("CoapplicantIncome")
+
+
+q75, q25 = np.percentile(x_test.CoapplicantIncome, [75, 25])
+iqr = q75 - q25
+a = q75 + (1.5 * iqr)
+
+# Anything above a will be outliers
+
+# We will replace outliers by mean because more the mean, higher will be the probability of getting loan
+
+
+x_test.CoapplicantIncome.loc[x_test["CoapplicantIncome"] >=a ] = np.mean(x_test["CoapplicantIncome"])
+
+x_test.boxplot("CoapplicantIncome")
+
+
+
+
+
+
+# LOAN AMOUNT VARIABLE PRE PREPROCESSING 
+
+
+# Training Set pre processing 
+
+x_train["LoanAmount"].describe()
+
+# Check for NULL values
+
+x_train.LoanAmount.isnull().sum()
+
+# Remove missing values
+# Lower loan amount, higher chances that it may get approved
+#imputing 
+
+x_train["LoanAmount"].fillna(x_train["LoanAmount"].median(), inplace = True)
+
+# Check for Outliers
+
+x_train.boxplot("LoanAmount")
+
+
+q75, q25 = np.percentile(x_train.LoanAmount, [75, 25])
+iqr = q75 - q25
+a = q75 + (1.5 * iqr)
+
+# Anything above a will be outliers
+
+# We will replace outliers by mean because more the mean, higher will be the probability of getting loan
+
+
+x_train.LoanAmount.loc[x_train["LoanAmount"] >=a ] = np.median(x_train["LoanAmount"])
+
+x_train.boxplot("LoanAmount")
+
+
+
+
+
+# Test Set pre processing
+
+x_test["LoanAmount"].describe()
+
+# Check for NULL values
+
+x_test.LoanAmount.isnull().sum()
+
+# Remove missing values
+# Lower loan amount, higher chances that it may get approved
+
+
+x_test["LoanAmount"].fillna(x_test["LoanAmount"].median(), inplace = True)
+
+
+# Check for Outliers
+
+x_test.boxplot("LoanAmount")
+
+
+q75, q25 = np.percentile(x_test.LoanAmount, [75, 25])
+
+iqr = q75 - q25
+a = q75 + (1.5 * iqr)
+
+# Anything above a will be outliers
+
+# We will replace outliers by mean because more the mean, higher will be the probability of getting loan
+
+
+x_test.LoanAmount.loc[x_test["LoanAmount"] >=a ] = np.median(x_test["LoanAmount"])
+
+x_test.boxplot("LoanAmount")
+
+
+
+
+
+
+
+# LOAN AMOUNT TERM PRE PROCESSING 
+
+
+# Training Set pre processing 
+
+x_train["Loan_Amount_Term"].describe()
+
+# Check for NULL values
+
+x_train.Loan_Amount_Term.isnull().sum()
+
+# Checking counts of levels
+
+x_train.Loan_Amount_Term.value_counts()
+
+
+
+# Test Set pre processsing 
+
+x_test["Loan_Amount_Term"].describe()
+
+# Check for NULL values
+
+x_test.Loan_Amount_Term.isnull().sum()
+
+# Checking counts of levels
+
+x_test.Loan_Amount_Term.value_counts()
+
+
+# Impute missing values with 360 since they are more in counts 
+
+x_train["Loan_Amount_Term"].fillna(360, inplace = True)
+
+x_test["Loan_Amount_Term"].fillna(360, inplace = True)
+
+
+
+
+
+
+
+#CREDIT HISTORY VARIABLE PRE PROCESSING 
+
+
+# Training Set pre processing 
+
+x_train["Credit_History"].describe()
+
+# Check for NULL values
+
+x_train.Credit_History.isnull().sum()
+
+# Checking counts of levels
+
+x_train.Credit_History.value_counts()
+
+
+
+
+# Test Set pre processing 
+
+x_test["Credit_History"].describe()
+
+# Check foor NULL values
+
+x_test.Credit_History.isnull().sum()
+
+# Checking counts of levels
+
+x_test.Credit_History.value_counts()
+
+
+# Impute missing values with 360 since they are more in counts
+
+x_train["Credit_History"].fillna(1, inplace = True)
+
+x_test["Credit_History"].fillna(1, inplace = True)
+
+
+
+
+
+
+# PROPERTY AREA VARIABLE PRE PROCESSING 
+
+x_train.Property_Area.isnull().sum()
+
+
+x_test.Property_Area.isnull().sum()
+
+# No missing values,hence no imputation required 
+
+
+
+
+
+
+
+# CREATING DUMMY VARIABLES
+
+
+
+# DUMMY GENDER VARIABLE
+
+# Train set dummies
+
+
+d1_tr = pd.get_dummies(x_train["Gender"])
+
+x_train = pd.concat([d1_tr, x_train], axis = 1)
+
+
+# Test set dummies
+
+d1_te = pd.get_dummies(x_test["Gender"])
+
+x_test = pd.concat([d1_te, x_test], axis = 1)
+
+
+
+
+
+
+# DUMMY MARRIED VARIABLE 
+
+
+# Train SET dummies
+
+
+d1_tr = pd.get_dummies(x_train["Married"])
+
+x_train = pd.concat([d1_tr, x_train], axis = 1)
+
+
+# Test set dummies
+
+d1_te = pd.get_dummies(x_test["Married"])
+
+x_test = pd.concat([d1_te, x_test], axis = 1)
+
+
+
+
+# DUMMY DEPENDENTS VARIABLE 
+
+# Train set dummies
+
+d1_tr = pd.get_dummies(x_train["Dependents"])
+
+x_train = pd.concat([d1_tr, x_train], axis = 1)
+
+
+# Test set dummies
+
+d1_te = pd.get_dummies(x_test["Dependents"])
+
+x_test = pd.concat([d1_te, x_test], axis = 1)
+
+
+
+
+
+# DUMMY EDUCATION VARIABLE 
+
+# Train set dummies
+
+d1_tr = pd.get_dummies(x_train["Education"])
+
+x_train = pd.concat([d1_tr, x_train], axis = 1)
+
+
+# Test set dummies
+
+d1_te = pd.get_dummies(x_test["Education"])
+
+x_test = pd.concat([d1_te, x_test], axis = 1)
+
+
+
+
+
+
+
+# DUMMY SELF EMPLOYED VARIABLES
+
+
+# Train set dummies
+
+d1_tr = pd.get_dummies(x_train["Self_Employed"])
+
+x_train = pd.concat([d1_tr, x_train], axis = 1)
+
+
+# Test set dummies
+
+d1_te = pd.get_dummies(x_test["Self_Employed"])
+
+x_test = pd.concat([d1_te, x_test], axis = 1)
+
+
+
+
+
+# DUMMY CREDIT HISTORY VARIABLE
+
+
+# Train set dummies
+
+d1_tr = pd.get_dummies(x_train["Credit_History"])
+
+x_train = pd.concat([d1_tr, x_train], axis = 1)
+
+
+# Test set dummies
+
+d1_te = pd.get_dummies(x_test["Credit_History"])
+
+x_test = pd.concat([d1_te, x_test], axis = 1)
+
+
+
+
+
+# DUMMY PROPERTY AREA VARIABLE
+
+# Train set dummies
+
+d1_tr = pd.get_dummies(x_train["Property_Area"])
+
+x_train = pd.concat([d1_tr, x_train], axis = 1)
+
+
+# Test set dummies
+
+d1_te = pd.get_dummies(x_test["Property_Area"])
+
+x_test = pd.concat([d1_te, x_test], axis = 1)
+
+
+
+# Drop original variables which has been used to make dummies 
+# also drop loan id,because it is of no use
+
+
+x_train = x_train.drop(["Loan_ID", "Gender", "Married", "Dependents", "Education",
+                        "Self_Employed", "Credit_History", "Property_Area"], axis = 1) 
+
+
+x_test = x_test.drop(["Loan_ID", "Gender", "Married", "Dependents", "Education",
+                        "Self_Employed", "Credit_History", "Property_Area"], axis = 1) 
+
+
+
+
+# FITTING MODEL ON TRAINING SET 
+
+
+classifier = LogisticRegression(random_state= 0)
+
+classifier.fit(x_train, y_train)
+
+
+# PREDICTING 
+
+# We will see how good it predicts the training set
+
+
+y_pred = classifier.predict(x_train)
+
+# CONFUSION MATRIX ,TO CHECK WRONGLY CLASSIFIED DATA POINTS AND CORRECTLY CLASSIFIED DATA POINTSS
+
+cm = confusion_matrix(y_train, y_pred)
+
+# PRINTING CONFUSION MATRIC TO VIEW IT 
+cm
+
+
+# PREDICTING TEST SET 
+
+
+y_pred = classifier.predict(x_test)
+
+
+# CONFUSION MATRIX
+
+cm = confusion_matrix(y_test, y_pred)
+
+Cm
+
+#ACCURACY OF THE MODEL
+
+Accuracy = [(289+58)/(58+289+1+19)]*100
